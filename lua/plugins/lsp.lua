@@ -15,16 +15,20 @@ return {
     dependencies = {
         { "williamboman/mason.nvim",           opts = {} },
         { "williamboman/mason-lspconfig.nvim", opts = { ensure_installed = servers } },
-        { "ms-jpq/coq_nvim",                   branch = "coq" },
-        { 'ms-jpq/coq.artifacts',              branch = 'artifacts' },
-        { 'ms-jpq/coq.thirdparty',             branch = '3p' }
+        { 'hrsh7th/nvim-cmp',                  optional = true },
     },
     config = function()
         local lspconfig = require('lspconfig')
 
         -- Setup language servers.
+        local capabilities = require('cmp_nvim_lsp').default_capabilities()
         for _, server in ipairs(servers) do
-            lspconfig[server].setup(require('coq').lsp_ensure_capabilities({ handlers = handlers }))
+            lspconfig[server].setup(
+                {
+                    capabilities = capabilities,
+                    handlers = handlers
+                }
+            )
         end
 
         -- Global mappings.
