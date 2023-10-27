@@ -39,6 +39,12 @@ map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
 map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
 map("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
 
+-- Move in insert mode with the <ctrl> hjkl keys
+map("i", "<C-h>", "<Left>", { desc = "Go to left window", remap = true })
+map("i", "<C-j>", "<Down>", { desc = "Go to lower window", remap = true })
+map("i", "<C-k>", "<Up>", { desc = "Go to upper window", remap = true })
+map("i", "<C-l>", "<Right>", { desc = "Go to right window", remap = true })
+
 -- Resize window using <ctrl> arrow keys
 map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
 map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
