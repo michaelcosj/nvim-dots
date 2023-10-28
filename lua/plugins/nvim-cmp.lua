@@ -107,7 +107,15 @@ return {
                 { name = 'nvim_lua' },
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' },
-                { name = 'buffer' },
+                {
+                    name = 'buffer',
+                    option = {
+                        -- to show text from all buffers
+                        get_bufnrs = function()
+                            return vim.api.nvim_list_bufs()
+                        end
+                    }
+                },
             }, {
                 { name = 'async_path' },
             })
