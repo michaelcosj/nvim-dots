@@ -45,7 +45,7 @@ return {
             vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = "Telescope old files" })
             vim.keymap.set('n', '<leader>ft', builtin.buffers, { desc = "Telescope open buffers" })
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Telescope open help tags" })
-            vim.keymap.set("n", "<leader>fb", ":Telescope file_browser<CR>", { desc = "Telescope open file browser" })
+            vim.keymap.set("n", "<leader>fe", ":Telescope file_browser<CR>", { desc = "Telescope open file browser" })
         end
     },
     {
