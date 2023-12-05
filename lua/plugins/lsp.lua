@@ -4,10 +4,9 @@ local handlers = {
 }
 
 local servers = {
-    'lua_ls', 'clangd', 'pyright',
-    'tsserver', 'gopls', 'svelte',
-    'cssls', 'jsonls', 'bashls',
-    'rust_analyzer',
+    'lua_ls', 'clangd', 'pyright', 'tsserver', 'gopls', 'svelte',
+    'cssls', 'jsonls', 'bashls', 'rust_analyzer', 'sqlls', 'html',
+    'emmet_language_server'
 }
 
 return {
@@ -23,12 +22,12 @@ return {
         -- Setup language servers.
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
         for _, server in ipairs(servers) do
-            lspconfig[server].setup(
-                {
-                    capabilities = capabilities,
-                    handlers = handlers
-                }
-            )
+            local opts = { capabilities = capabilities, handlers = handlers }
+            if server == 'html' or server == 'emmet_language_server' then
+                opts.filetypes = { 'html', 'edge' }
+            end
+
+            lspconfig[server].setup(opts)
         end
 
         -- Global mappings.
