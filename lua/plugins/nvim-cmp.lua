@@ -79,7 +79,7 @@ return {
                 ['<C-o>'] = cmp.mapping.open_docs(),
                 ['<C-c>'] = cmp.mapping.close_docs(),
 
-                ['<C-Space>'] = cmp.mapping.complete(),
+                ['<C-;>'] = cmp.mapping.complete(),
                 ['<C-e>'] = cmp.mapping.abort(),
 
                 ['<Tab>'] = cmp.mapping.select_next_item(),
@@ -107,6 +107,7 @@ return {
                 { name = 'nvim_lua' },
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' },
+                { name = 'async_path' },
                 {
                     name = 'buffer',
                     option = {
@@ -116,9 +117,7 @@ return {
                         end
                     }
                 },
-            }, {
-                { name = 'async_path' },
-            })
+            }, {})
         })
 
         cmp.setup.filetype('gitcommit', {

@@ -43,3 +43,6 @@ vim.cmd "set whichwrap+=<,>,[,],h,l"
 
 -- set c fileype for headers, not cpp
 vim.g.c_syntax_for_h = 1
+
+-- set templ filetype
+vim.filetype.add({ extension = { templ = "templ" } })

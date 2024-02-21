@@ -14,16 +14,6 @@ vim.opt.rtp:prepend(lazypath)
 -- coq configuration
 -- Have to place it before lazy setup
 -- https://github.com/ms-jpq/coq_nvim/issues/403
-vim.g.coq_settings = {
-    auto_start = true,
-    keymap = { recommended = false },
-    clients = {
-        lsp = {
-            always_on_top = {},
-        }
-    }
-}
-
 require("lazy").setup("plugins", {
     checker = { enabled = true },
     performance = {

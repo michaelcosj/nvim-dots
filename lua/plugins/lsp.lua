@@ -6,7 +6,7 @@ local handlers = {
 local servers = {
     'lua_ls', 'clangd', 'pyright', 'tsserver', 'gopls', 'svelte',
     'cssls', 'jsonls', 'bashls', 'rust_analyzer', 'sqlls', 'html',
-    'emmet_language_server'
+    'emmet_language_server', 'templ', 'htmx'
 }
 
 return {
@@ -23,8 +23,8 @@ return {
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
         for _, server in ipairs(servers) do
             local opts = { capabilities = capabilities, handlers = handlers }
-            if server == 'html' or server == 'emmet_language_server' then
-                opts.filetypes = { 'html', 'edge' }
+            if server == 'html' or server == 'emmet_language_server' or server == 'htmx' then
+                opts.filetypes = { 'html', 'edge', 'templ' }
             end
 
             lspconfig[server].setup(opts)
@@ -70,8 +70,24 @@ return {
 
                 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, make_opts("Rename symbol"))
                 vim.keymap.set({ 'n', 'v' }, '<leader>xa', vim.lsp.buf.code_action, make_opts("Show code actions"))
+
                 vim.keymap.set('n', '<leader>f', function()
-                    vim.lsp.buf.format { async = true }
+                    if vim.bo.filetype == "templ" then
+                        local bufnr = vim.api.nvim_get_current_buf()
+                        local filename = vim.api.nvim_buf_get_name(bufnr)
+                        local cmd = "templ fmt " .. vim.fn.shellescape(filename)
+
+                        vim.fn.jobstart(cmd, {
+                            on_exit = function()
+                                -- Reload the buffer only if it's still the current buffer
+                                if vim.api.nvim_get_current_buf() == bufnr then
+                                    vim.cmd('e!')
+                                end
+                            end,
+                        })
+                    else
+                        vim.lsp.buf.format { async = true }
+                    end
                 end, make_opts("Format document"))
 
 

@@ -4,7 +4,10 @@ return {
         branch = '0.1.x',
         dependencies = {
             { 'nvim-tree/nvim-web-devicons' }, { 'nvim-lua/plenary.nvim' },
-            { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+            {
+                'nvim-telescope/telescope-fzf-native.nvim',
+                build = 'make',
+            },
         },
         config = function()
             local telescope = require('telescope')
@@ -30,7 +33,8 @@ return {
                         hijack_netrw = true,
                         path = "%:p:h",
                         follow_symlinks = true,
-                        initial_mode = "normal"
+                        initial_mode = "normal",
+                        grouped = true,
                     },
                 },
             }
