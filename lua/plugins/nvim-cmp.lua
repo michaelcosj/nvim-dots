@@ -82,10 +82,11 @@ return {
                 ['<C-;>'] = cmp.mapping.complete(),
                 ['<C-e>'] = cmp.mapping.abort(),
 
-                ['<Tab>'] = cmp.mapping.select_next_item(),
-                ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+                ['<C-n>'] = cmp.mapping.select_next_item(),
+                ['<C-p>'] = cmp.mapping.select_prev_item(),
 
                 ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                ['<C-y>'] = cmp.mapping.confirm({ select = true }),
 
                 ['<C-h>'] = cmp.mapping(function(fallback)
                     if luasnip.expand_or_locally_jumpable() then
@@ -107,7 +108,7 @@ return {
                 { name = 'nvim_lua' },
                 { name = 'nvim_lsp' },
                 { name = 'luasnip' },
-                { name = 'async_path' },
+                -- { name = 'async_path' },
                 {
                     name = 'buffer',
                     option = {
@@ -136,7 +137,7 @@ return {
         cmp.setup.cmdline(':', {
             mapping = cmp.mapping.preset.cmdline(),
             sources = cmp.config.sources({
-                { name = 'async_path' }
+                -- { name = 'async_path' }
             }, {
                 { name = 'cmdline' }
             })

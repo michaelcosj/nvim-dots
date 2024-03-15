@@ -4,9 +4,9 @@ local handlers = {
 }
 
 local servers = {
-    'lua_ls', 'clangd', 'pyright', 'tsserver', 'gopls', 'svelte',
-    'cssls', 'jsonls', 'bashls', 'rust_analyzer', 'sqlls', 'html',
-    'emmet_language_server', 'templ', 'htmx'
+    'templ', 'htmx', 'cssls', 'jsonls', 'bashls', 'intelephense',
+    'lua_ls', 'clangd', 'pyright', 'tsserver', 'gopls',
+    'svelte', 'rust_analyzer', 'html', 'emmet_language_server'
 }
 
 return {
@@ -25,6 +25,17 @@ return {
             local opts = { capabilities = capabilities, handlers = handlers }
             if server == 'html' or server == 'emmet_language_server' or server == 'htmx' then
                 opts.filetypes = { 'html', 'edge', 'templ' }
+            elseif server == 'intelephense' then
+                opts.filetypes = { "php", "blade" }
+                opts.settings = {
+                    intelephense = {
+                        filetypes = { "php", "blade" },
+                        files = {
+                            associations = { "*.php", "*.blade.php" }, -- Associating .blade.php files as well
+                            maxSize = 5000000,
+                        },
+                    }
+                }
             end
 
             lspconfig[server].setup(opts)

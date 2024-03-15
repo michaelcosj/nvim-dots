@@ -20,11 +20,15 @@ return {
                             ["<C-j>"] = actions.move_selection_next,
                             ["<C-k>"] = actions.move_selection_previous
                         },
+                        n = {
+                            ["q"] = actions.close
+                        }
                     },
                 },
                 pickers = {
                     find_files = {
                         theme = "dropdown",
+                        file_ignore_patterns = { "^vendor/", ".git" }
                     }
                 },
                 extensions = {
@@ -44,7 +48,10 @@ return {
             telescope.load_extension "file_browser"
             telescope.load_extension('fzf')
 
-            vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Telescope find files" })
+            vim.keymap.set('n', '<leader>ff', function()
+                builtin.find_files({ hidden = true })
+            end, { desc = "Telescope find files" })
+
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = "Telescope live grep" })
             vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = "Telescope old files" })
             vim.keymap.set('n', '<leader>ft', builtin.buffers, { desc = "Telescope open buffers" })
