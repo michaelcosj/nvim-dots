@@ -56,7 +56,6 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
-
 -- set <leader> f to call ptop format for prisma files
 vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("prisma_format", { clear = true }),
@@ -64,4 +63,17 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function()
         vim.keymap.set('n', '<leader>f', ':silent !pnpm prisma format<cr>', { desc = "Format file with prisma format", })
     end,
+})
+
+-- filetypes
+vim.filetype.add({
+    pattern = {
+        ['.*%.blade%.php'] = 'blade',
+    },
+})
+
+vim.filetype.add({
+    pattern = {
+        ['aliasrc'] = 'bash',
+    },
 })

@@ -14,12 +14,6 @@ return {
             filetype = "blade"
         }
 
-        vim.filetype.add({
-            pattern = {
-                ['.*%.blade%.php'] = 'blade',
-            },
-        })
-
         configs.setup({
             ensure_installed = {
                 "c", "lua", "vim", "vimdoc",
