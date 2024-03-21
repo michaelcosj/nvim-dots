@@ -28,7 +28,7 @@ return {
                 pickers = {
                     find_files = {
                         theme = "dropdown",
-                        file_ignore_patterns = { "^vendor/", ".git" }
+                        file_ignore_patterns = { "^vendor/", "^.git/", "^node_modules/" }
                     }
                 },
                 extensions = {

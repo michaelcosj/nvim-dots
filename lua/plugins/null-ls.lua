@@ -3,7 +3,13 @@ return {
     dependencies = {
         { "nvim-lua/plenary.nvim" },
         { "williamboman/mason.nvim" },
-        { "jay-babu/mason-null-ls.nvim", opts = { ensure_installed = { "mypy", "black" } } }
+        {
+            "jay-babu/mason-null-ls.nvim",
+            opts = {
+                ensure_installed = {
+                    "mypy", "black", "pint", "blade_formatter" }
+            }
+        }
     },
     config = function()
         local null_ls = require("null-ls")

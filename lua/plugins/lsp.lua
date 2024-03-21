@@ -24,7 +24,7 @@ return {
         for _, server in ipairs(servers) do
             local opts = { capabilities = capabilities, handlers = handlers }
             if server == 'html' or server == 'emmet_language_server' or server == 'htmx' then
-                opts.filetypes = { 'html', 'edge', 'templ' }
+                opts.filetypes = { 'html', 'edge', 'templ', 'blade' }
             elseif server == 'intelephense' then
                 opts.filetypes = { "php", "blade" }
                 opts.settings = {
