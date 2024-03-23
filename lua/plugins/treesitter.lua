@@ -20,12 +20,11 @@ return {
                 "query", "go", "typescript",
                 "javascript", "bash", "html",
                 "css", "python", "rust", "templ",
-                "svelte", "sql", "php_only", "blade"
+                "svelte", "sql", "php", "blade"
             },
             sync_install = false,
             highlight = { enable = true },
             indent = { enable = true },
         })
-
     end
 }

@@ -20,8 +20,8 @@ map("n", "<C-Down>", "<cmd>resize +2<CR>", opts)
 map("n", "<C-Up>", "<cmd>resize -2<CR>", opts)
 
 -- buffer maps
-map("n", "bn", "<cmd>bnext<cr>", opts)
-map("n", "bp", "<cmd>bprevious<cr>", opts)
+map("n", "<leader>bn", "<cmd>bnext<cr>", opts)
+map("n", "<leader>bp", "<cmd>bprevious<cr>", opts)
 
 -- better up/down
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })

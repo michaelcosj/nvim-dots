@@ -2,6 +2,7 @@
 
 local options = {
     backup = false,
+    background = 'dark',
     clipboard = "unnamedplus",
     completeopt = { "menuone", "noselect" },
     conceallevel = 3,

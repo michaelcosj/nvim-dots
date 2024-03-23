@@ -3,7 +3,7 @@ return {
     dependencies = { 'nvim-tree/nvim-web-devicons', 'cbochs/grapple.nvim' },
     opts = {
         options = {
-            theme = 'nightfly',
+            theme = 'ayu_dark',
             component_separators = { left = '|', right = '|' },
             section_separators = { left = '', right = '' },
         },
