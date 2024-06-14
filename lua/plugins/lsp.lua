@@ -4,9 +4,9 @@ local handlers = {
 }
 
 local servers = {
-    'templ', 'htmx', 'cssls', 'jsonls', 'bashls', 'intelephense',
+    'templ', 'htmx', 'cssls', 'jsonls', 'bashls', 'phpactor',
     'lua_ls', 'clangd', 'pyright', 'tsserver', 'gopls',
-    'svelte', 'rust_analyzer', 'html', 'emmet_language_server'
+    'svelte', 'volar', 'rust_analyzer', 'html', 'emmet_language_server'
 }
 
 return {
@@ -25,6 +25,23 @@ return {
             local opts = { capabilities = capabilities, handlers = handlers }
             if server == 'html' or server == 'emmet_language_server' or server == 'htmx' then
                 opts.filetypes = { 'html', 'edge', 'templ', 'blade' }
+            elseif server == 'biome' then
+                opts.root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "biome.json", "biome.jsonc")
+            elseif server == 'tsserver' then
+                local mason_registry = require('mason-registry')
+                local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
+                    '/node_modules/@vue/language-server'
+
+                opts.init_options = {
+                    plugins = {
+                        {
+                            name = '@vue/typescript-plugin',
+                            location = vue_language_server_path,
+                            languages = { 'vue' },
+                        },
+                    },
+                }
+                opts.filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' }
             elseif server == 'intelephense' then
                 opts.filetypes = { "php", "blade" }
                 opts.settings = {
@@ -101,6 +118,9 @@ return {
                     end
                 end, make_opts("Format document"))
 
+                vim.keymap.set('v', '<leader>f', function()
+                    vim.lsp.buf.format({ range = {} })
+                end, make_opts('Format Document ranged'))
 
                 -- auto open float diagnostic
                 vim.api.nvim_create_autocmd("CursorHold", {
