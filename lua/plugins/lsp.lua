@@ -1,143 +1,208 @@
+local lsp = vim.lsp
+
 local handlers = {
-    ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
-    ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
+  ["textDocument/hover"] = lsp.with(lsp.handlers.hover, { border = "rounded" }),
+  ["textDocument/signatureHelp"] = lsp.with(lsp.handlers.signature_help, { border = "rounded" }),
 }
 
 local servers = {
-    'templ', 'htmx', 'cssls', 'jsonls', 'bashls', 'phpactor',
-    'lua_ls', 'clangd', 'pyright', 'tsserver', 'gopls',
-    'svelte', 'volar', 'rust_analyzer', 'html', 'emmet_language_server'
+  templ = {},
+  biome = {},
+  cssls = {},
+  volar = {},
+  jsonls = {},
+  bashls = {},
+  lua_ls = {},
+  clangd = {},
+  svelte = {},
+  pyright = {},
+  phpactor = {},
+  rust_analyzer = {},
+  htmx = {
+    filetypes = {
+      'html',
+      'edge',
+      'templ',
+      'blade',
+    }
+  },
+  html = {
+    filetypes = {
+      'html',
+      'edge',
+      'templ',
+      'blade',
+    }
+  },
+  emmet_language_server = {
+    filetypes = {
+      'html',
+      'edge',
+      'templ',
+      'blade',
+    }
+  },
+  gopls = {
+    settings = {
+      gopls = {
+        hints = {
+          assignVariableTypes = true,
+          compositeLiteralFields = true,
+          compositeLiteralTypes = true,
+          constantValues = true,
+          functionTypeParameters = true,
+          parameterNames = true,
+          rangeVariableTypes = true,
+        }
+      }
+    }
+  }
 }
 
 return {
+  {
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    opts = {},
+  },
+  {
     "neovim/nvim-lspconfig",
     dependencies = {
-        { "williamboman/mason.nvim",           opts = {} },
-        { "williamboman/mason-lspconfig.nvim", opts = { ensure_installed = servers } },
-        { 'hrsh7th/nvim-cmp',                  optional = true },
+      { "williamboman/mason.nvim",           opts = {} },
+      { "williamboman/mason-lspconfig.nvim", opts = { ensure_installed = vim.tbl_keys(servers or {}) } },
+      {
+        "pmizio/typescript-tools.nvim",
+        dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+        opts = {},
+      },
     },
     config = function()
-        local lspconfig = require('lspconfig')
+      local lspconfig = require('lspconfig')
 
-        -- Setup language servers.
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
-        for _, server in ipairs(servers) do
-            local opts = { capabilities = capabilities, handlers = handlers }
-            if server == 'html' or server == 'emmet_language_server' or server == 'htmx' then
-                opts.filetypes = { 'html', 'edge', 'templ', 'blade' }
-            elseif server == 'biome' then
-                opts.root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "biome.json", "biome.jsonc")
-            elseif server == 'tsserver' then
-                local mason_registry = require('mason-registry')
-                local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
-                    '/node_modules/@vue/language-server'
+      local capabilities = lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-                opts.init_options = {
-                    plugins = {
-                        {
-                            name = '@vue/typescript-plugin',
-                            location = vue_language_server_path,
-                            languages = { 'vue' },
-                        },
-                    },
-                }
-                opts.filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' }
-            elseif server == 'intelephense' then
-                opts.filetypes = { "php", "blade" }
-                opts.settings = {
-                    intelephense = {
-                        filetypes = { "php", "blade" },
-                        files = {
-                            associations = { "*.php", "*.blade.php" }, -- Associating .blade.php files as well
-                            maxSize = 5000000,
-                        },
-                    }
-                }
+      require("typescript-tools").setup({
+        handlers = handlers,
+        capabilities = capabilities,
+        filetypes = {
+          "javascript",
+          "typescript",
+          "vue",
+        },
+        settings = {
+          tsserver_max_memory = "auto",
+          tsserver_plugins = {
+            "@vue/typescript-plugin",
+          },
+          tsserver_file_preferences = {
+            includeInlayParameterNameHints = "all",
+            includeCompletionsForModuleExports = true,
+            quotePreference = "auto",
+          },
+          expose_as_code_action = "all",
+        },
+      })
+
+      require('mason-lspconfig').setup {
+        handlers = {
+          function(server_name)
+            local opts = servers[server_name] or {}
+
+            opts.handlers = handlers
+            opts.capabilities = vim.tbl_deep_extend('force', {}, capabilities,
+              opts.capabilities or {})
+
+            lspconfig[server_name].setup(opts)
+          end,
+        },
+      }
+
+      -- diagnostics signs
+      local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+      for type, icon in pairs(signs) do
+        local hl = "DiagnosticSign" .. type
+        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+      end
+
+      -- diagnostics mappings.
+      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic" })
+      vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
+      vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostic in loclist" })
+
+      -- only mapped after the language server
+      -- attaches to the current buffer
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+
+        callback = function(ev)
+          local client = lsp.get_client_by_id(ev.data.client_id)
+
+          local map = function(key, action, desc)
+            vim.keymap.set('n', key, action, { buffer = ev.buf, desc = 'LSP: ' .. desc })
+          end
+
+          map('g.', lsp.buf.code_action, "Code Actions")
+          map('gD', lsp.buf.declaration, "[G]oto [D]eclaration")
+          map('gd', require("telescope.builtin").lsp_definitions, "[G]oto [D]efintion")
+          map('gr', require("telescope.builtin").lsp_references, "List [R]eferences")
+          map('gi', require("telescope.builtin").lsp_implementations, "List [I]mplemetations")
+          map('<leader>D', require("telescope.builtin").lsp_type_definitions, "Type [D]efintion")
+
+          map('<leader>ds', require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
+          map('<leader>ws', require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+
+          map('K', lsp.buf.hover, "Open hover float")
+          map('<C-k>', lsp.buf.signature_help, "Open signature help")
+
+          map('<leader>rn', lsp.buf.rename, "Rename symbol")
+
+          vim.keymap.set('v', '<leader>f', function()
+            lsp.buf.format({ range = {} })
+          end, { desc = 'LSP [F]ormat Selection', buffer = ev.buf })
+
+          map('<leader>f', function()
+            if vim.bo.filetype == "templ" then
+              local bufnr = vim.api.nvim_get_current_buf()
+              local filename = vim.api.nvim_buf_get_name(bufnr)
+              local cmd = "templ fmt " .. vim.fn.shellescape(filename)
+
+              vim.fn.jobstart(cmd, {
+                on_exit = function()
+                  -- Reload the buffer only if it's still the current buffer
+                  if vim.api.nvim_get_current_buf() == bufnr then
+                    vim.cmd('e!')
+                  end
+                end,
+              })
+            else
+              lsp.buf.format { async = true }
             end
+          end, "[F]ormat buffer")
 
-            lspconfig[server].setup(opts)
-        end
+          -- auto open float diagnostic
+          vim.api.nvim_create_autocmd("CursorHold", {
+            buffer = ev.buf,
+            callback = function()
+              local floatOpts = {
+                focusable = false,
+                close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+                border = 'rounded',
+                source = 'always',
+                prefix = ' ',
+                scope = 'cursor',
+              }
+              vim.diagnostic.open_float(nil, floatOpts)
+            end
+          })
 
-        -- Global mappings.
-        vim.keymap.set('n', '<leader>xe', vim.diagnostic.open_float, { desc = "Open diagnostic float" })
-        vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Goto prev diagnostic" })
-        vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
-        vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostic in loclist" })
-
-        -- diagnostic signs
-        local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
-        for type, icon in pairs(signs) do
-            local hl = "DiagnosticSign" .. type
-            vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-        end
-
-        -- only mapped after the language server
-        -- attaches to the current buffer
-        vim.api.nvim_create_autocmd('LspAttach', {
-            group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-            callback = function(ev)
-                local make_opts = function(d)
-                    return { desc = d, buffer = ev.buf }
-                end
-
-                vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, make_opts("Goto Declaration"))
-                vim.keymap.set('n', 'gd', vim.lsp.buf.definition, make_opts("Goto Defintion"))
-                vim.keymap.set('n', 'gr', vim.lsp.buf.references, make_opts("List references"))
-                vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, make_opts("List Implemetations"))
-                vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, make_opts("Show type definition"))
-
-                vim.keymap.set('n', 'K', vim.lsp.buf.hover, make_opts("Open hover float"))
-                vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, make_opts("Open signature help"))
-
-                vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, make_opts("Add workspace folder"))
-                vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder,
-                    make_opts("Remove workspace folder"))
-                vim.keymap.set('n', '<leader>wl', function()
-                    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-                end, make_opts("List Workspace folder"))
-
-                vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, make_opts("Rename symbol"))
-                vim.keymap.set({ 'n', 'v' }, '<leader>xa', vim.lsp.buf.code_action, make_opts("Show code actions"))
-
-                vim.keymap.set('n', '<leader>f', function()
-                    if vim.bo.filetype == "templ" then
-                        local bufnr = vim.api.nvim_get_current_buf()
-                        local filename = vim.api.nvim_buf_get_name(bufnr)
-                        local cmd = "templ fmt " .. vim.fn.shellescape(filename)
-
-                        vim.fn.jobstart(cmd, {
-                            on_exit = function()
-                                -- Reload the buffer only if it's still the current buffer
-                                if vim.api.nvim_get_current_buf() == bufnr then
-                                    vim.cmd('e!')
-                                end
-                            end,
-                        })
-                    else
-                        vim.lsp.buf.format { async = true }
-                    end
-                end, make_opts("Format document"))
-
-                vim.keymap.set('v', '<leader>f', function()
-                    vim.lsp.buf.format({ range = {} })
-                end, make_opts('Format Document ranged'))
-
-                -- auto open float diagnostic
-                vim.api.nvim_create_autocmd("CursorHold", {
-                    buffer = ev.buf,
-                    callback = function()
-                        local opts = {
-                            focusable = false,
-                            close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-                            border = 'rounded',
-                            source = 'always',
-                            prefix = ' ',
-                            scope = 'cursor',
-                        }
-                        vim.diagnostic.open_float(nil, opts)
-                    end
-                })
-            end,
-        })
+          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+            map('<leader>th', function()
+              lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled({}), { bufnr = ev.buf })
+            end, "[T]oggle Inlay [H]int")
+          end
+        end,
+      })
     end
+  }
 }

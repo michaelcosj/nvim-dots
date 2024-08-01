@@ -27,7 +27,7 @@ local options = {
     splitbelow = true,
     splitright = true,
     swapfile = false,
-    tabstop = 4,
+    tabstop = 2,
     termguicolors = true,
     timeout = true,
     timeoutlen = 500,
@@ -47,3 +47,6 @@ vim.g.c_syntax_for_h = 1
 
 -- set templ filetype
 vim.filetype.add({ extension = { templ = "templ" } })
+
+-- set colorscheme
+vim.cmd("colorscheme retrobox")

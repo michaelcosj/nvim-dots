@@ -3,8 +3,6 @@ return {
     dependencies = {
         "nvim-lua/plenary.nvim",
         "sindrets/diffview.nvim",
-        { 'lewis6991/gitsigns.nvim', config = true }
-
     },
     config = function()
         require("neogit").setup({})

@@ -11,7 +11,7 @@ vim.g.maplocalleader = " "
 map("n", "<leader>w", "<cmd>w<cr>")
 
 -- turn of highlighting after search
-map("n", "<leader>h", "<cmd>noh<cr>")
+map("n", "<Esc>", "<cmd>noh<cr>")
 
 -- Arrow keys to adjust window size
 map("n", "<C-Right>", "<cmd>vertical resize +2<CR>", opts)
