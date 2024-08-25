@@ -16,8 +16,44 @@ local servers = {
   clangd = {},
   svelte = {},
   pyright = {},
-  phpactor = {},
+  intelephense = {},
   rust_analyzer = {},
+  vtsls = {
+    filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+    settings = {
+      typescript = {
+        format = {
+          enable = false
+        },
+        tsserver = {
+          useSeparateSyntaxServer = false,
+          maxTsServerMemory = 4096,
+        }
+      },
+      vtsls = {
+        tsserver = {
+          globalPlugins = {}
+        },
+      },
+    },
+    before_init = function(params, config)
+      local result = vim.system(
+        { "npm", "query", "#vue" },
+        { cwd = params.workspaceFolders[1].name, text = true }
+      ):wait()
+      if result.stdout ~= "[]" then
+        local vuePluginConfig = {
+          name = "@vue/typescript-plugin",
+          location = require("mason-registry").get_package("vue-language-server"):get_install_path()
+              .. "/node_modules/@vue/language-server",
+          languages = { "vue" },
+          configNamespace = "typescript",
+          enableForWorkspaceTypeScriptVersions = true,
+        }
+        table.insert(config.settings.vtsls.tsserver.globalPlugins, vuePluginConfig)
+      end
+    end,
+  },
   htmx = {
     filetypes = {
       'html',
@@ -40,6 +76,7 @@ local servers = {
       'edge',
       'templ',
       'blade',
+      'vue',
     }
   },
   gopls = {
@@ -70,39 +107,12 @@ return {
     dependencies = {
       { "williamboman/mason.nvim",           opts = {} },
       { "williamboman/mason-lspconfig.nvim", opts = { ensure_installed = vim.tbl_keys(servers or {}) } },
-      {
-        "pmizio/typescript-tools.nvim",
-        dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-        opts = {},
-      },
     },
     config = function()
       local lspconfig = require('lspconfig')
 
       local capabilities = lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
-
-      require("typescript-tools").setup({
-        handlers = handlers,
-        capabilities = capabilities,
-        filetypes = {
-          "javascript",
-          "typescript",
-          "vue",
-        },
-        settings = {
-          tsserver_max_memory = "auto",
-          tsserver_plugins = {
-            "@vue/typescript-plugin",
-          },
-          tsserver_file_preferences = {
-            includeInlayParameterNameHints = "all",
-            includeCompletionsForModuleExports = true,
-            quotePreference = "auto",
-          },
-          expose_as_code_action = "all",
-        },
-      })
 
       require('mason-lspconfig').setup {
         handlers = {

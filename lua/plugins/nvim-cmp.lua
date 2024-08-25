@@ -59,16 +59,26 @@ return {
           require('luasnip').lsp_expand(args.body)
         end,
       },
+      window = {
+        completion = {
+          winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+          col_offset = -3,
+          side_padding = 1,
+          winblend = 0,
+        },
+      },
+      ---@diagnostic disable-next-line: missing-fields
       formatting = {
+        fields = { "kind", "abbr", "menu" },
         format = function(entry, vim_item)
           vim_item.kind = string.format('%s  %s', kind_icons[vim_item.kind], vim_item.kind)
           vim_item.menu = ({
-            path = "[Path]",
-            buffer = "[Buf]",
-            cmdline = "[Cmd]",
-            nvim_lsp = "[LSP]",
-            luasnip = "[Snip]",
-            nvim_lua = "[Lua]",
+            path = "(Path)",
+            buffer = "(Buf)",
+            cmdline = "(Cmd)",
+            nvim_lsp = "(LSP)",
+            luasnip = "(Snip)",
+            nvim_lua = "(Lua)",
           })[entry.source.name]
           return vim_item
         end
@@ -126,23 +136,29 @@ return {
     cmp.setup.filetype('gitcommit', {
       sources = cmp.config.sources({
         { name = 'buffer' },
-      })
+      }, {})
     })
 
     cmp.setup.cmdline({ '/', '?' }, {
       mapping = cmp.mapping.preset.cmdline(),
       sources = {
         { name = 'buffer' }
-      }
+      },
+      {}
     })
 
     cmp.setup.cmdline(':', {
       mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({
-        -- { name = 'async_path' }
-      }, {
         { name = 'cmdline' }
-      })
+      }, {})
+    })
+
+    cmp.setup.cmdline(':!', {
+      mapping = cmp.mapping.preset.cmdline(),
+      sources = cmp.config.sources({
+        { name = 'path' }
+      }, {})
     })
   end
 }
