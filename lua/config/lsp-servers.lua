@@ -26,7 +26,6 @@ return {
 					enable = false,
 				},
 				tsserver = {
-					useSeparateSyntaxServer = false,
 					maxTsServerMemory = 4096,
 				},
 			},

@@ -1,5 +1,6 @@
+-- https://github.com/ashfinal/qfview.nvim
 return {
-    "ashfinal/qfview.nvim",
-    event = "UIEnter",
-    config = true,
+	"ashfinal/qfview.nvim",
+	event = "UIEnter",
+	opts = {},
 }

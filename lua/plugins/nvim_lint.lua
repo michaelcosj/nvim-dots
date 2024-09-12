@@ -1,3 +1,4 @@
+-- https://github.com/mfussenegger/nvim-lint
 return {
 	"mfussenegger/nvim-lint",
 	opts = {},
@@ -7,10 +8,10 @@ return {
 			typescript = { "biomejs" },
 			javascriptreact = { "biomejs" },
 			typescriptreact = { "biomejs" },
-			svelte = { "biomejs" },
-			vue = { "biomejs" },
+			svelte = { "eslint_d" },
+			vue = { "eslint_d" },
 			json = { "biomejs" },
-			php = { "phpinsights" },
+			php = { "phpstan" },
 		}
 
 		vim.api.nvim_create_autocmd({ "BufWritePost" }, {

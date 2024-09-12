@@ -48,15 +48,13 @@ vim.g.c_syntax_for_h = 1
 -- set templ filetype
 vim.filetype.add({ extension = { templ = "templ" } })
 
--- set colorscheme
-vim.cmd("colorscheme retrobox")
 vim.cmd([[
-  highlight Normal guibg=none
-  highlight NonText guibg=none
-  highlight SignColumn guibg=none
-  highlight FoldColumn guibg=none
-  highlight Normal ctermbg=none
-  highlight NonText ctermbg=none
-  highlight SignColumn ctermbg=none
-  highlight FoldColumn ctermbg=none
+  if exists("$TMUX")
+      let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
+  endif
+  if has('termguicolors') "true colors
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    set termguicolors
+  endif
 ]])
