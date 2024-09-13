@@ -38,7 +38,6 @@ return {
 					"sql",
 					"php",
 					"blade",
-					"comment",
 					"markdown",
 				},
 				sync_install = false,
