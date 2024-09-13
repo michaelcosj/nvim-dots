@@ -58,3 +58,5 @@ vim.cmd([[
     set termguicolors
   endif
 ]])
+
+-- vim.cmd("colorscheme retrobox")
