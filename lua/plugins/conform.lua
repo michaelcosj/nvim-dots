@@ -41,8 +41,8 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			python = { "black" },
-			javascript = { "biome" },
-			typescript = { "biome" },
+			javascript = { "prettierd" },
+			typescript = { "prettierd" },
 			php = { "pint" },
 			vue = { "prettierd" },
 			blade = { "blade_formatter" },
