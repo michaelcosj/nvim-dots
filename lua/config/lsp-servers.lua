@@ -26,7 +26,7 @@ return {
 					enable = false,
 				},
 				tsserver = {
-					maxTsServerMemory = 4096,
+					maxTsServerMemory = 5096,
 				},
 			},
 			vtsls = {

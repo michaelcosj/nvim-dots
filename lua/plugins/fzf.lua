@@ -1,6 +1,7 @@
 -- https://github.com/ibhagwan/fzf-lua
 return {
 	"ibhagwan/fzf-lua",
+	enabled = false,
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	opts = {},
 	config = function(opts)

@@ -9,5 +9,8 @@ return {
 				color = "hint",
 			},
 		},
+		highlight = {
+			keyword = "fg",
+		},
 	},
 }

@@ -65,6 +65,7 @@ return {
 					col_offset = -3,
 					side_padding = 1,
 					winblend = 0,
+					border = "rounded",
 				},
 			},
 			---@diagnostic disable-next-line: missing-fields
@@ -91,7 +92,7 @@ return {
 				["<C-o>"] = cmp.mapping.open_docs(),
 				["<C-c>"] = cmp.mapping.close_docs(),
 
-				["<C-;>"] = cmp.mapping.complete(),
+				["<C-O>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
 
 				["<C-n>"] = cmp.mapping.select_next_item(),

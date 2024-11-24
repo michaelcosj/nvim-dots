@@ -37,7 +37,7 @@ M.servers = {
 	svelte = {},
 	pyright = {},
 	eslint = {},
-	intelephense = {},
+	phpactor = {},
 	rust_analyzer = {},
 	markdown_oxide = {
 		capabilities = {
@@ -63,6 +63,8 @@ M.servers = {
 				},
 				tsserver = {
 					maxTsServerMemory = 4096,
+					useSyntaxServer = "never",
+					-- nodePath = "/home/michael/.local/bin/node-v20.8.0-unofficial_build/bin/node",
 				},
 			},
 			vtsls = {
@@ -121,32 +123,17 @@ M.on_attach = function(ev)
 		})
 	end, "Open [D]iagnostic Float", ev.buf)
 
-	local ok, fzf_lua = pcall(require, "fzf-lua")
+	local ok, telescope = pcall(require, "telescope.builtin")
 	if ok then
-		map("g.", fzf_lua.lsp_code_actions, "Code Actions", ev.buf)
+		map("g.", lsp.buf.code_action, "Code Actions", ev.buf)
+		map("gD", lsp.buf.declaration, "[G]oto [D]eclaration")
+		map("gd", telescope.lsp_definitions, "[G]oto [D]efintion")
+		map("gr", telescope.lsp_references, "List [R]eferences")
+		map("gi", telescope.lsp_implementations, "List [I]mplemetations")
 
-		map("gD", function()
-			fzf_lua.lsp_declarations({ jump_to_single_result = true }, ev.buf)
-		end, "[G]oto [D]eclaration")
-
-		map("gd", function()
-			fzf_lua.lsp_definitions({ jump_to_single_result = true }, ev.buf)
-		end, "[G]oto [D]efintion")
-
-		map("gr", function()
-			fzf_lua.lsp_references({ jump_to_single_result = true }, ev.buf)
-		end, "List [R]eferences")
-
-		map("gi", function()
-			fzf_lua.lsp_implementations({ jump_to_single_result = true }, ev.buf)
-		end, "List [I]mplemetations")
-
-		map("<leader>D", function()
-			fzf_lua.lsp_typedefs({ jump_to_single_result = true }, ev.buf)
-		end, "Type [D]efintion")
-
-		map("<leader>ds", fzf_lua.lsp_document_symbols, "[D]ocument [S]ymbols", ev.buf)
-		map("<leader>ws", fzf_lua.lsp_live_workspace_symbols, "[W]orkspace [S]ymbols", ev.buf)
+		map("<leader>D", telescope.lsp_type_definitions, "Type [D]efintion")
+		map("<leader>ds", telescope.lsp_document_symbols, "[D]ocument [S]ymbols", ev.buf)
+		map("<leader>ws", telescope.lsp_workspace_symbols, "[W]orkspace [S]ymbols", ev.buf)
 	end
 
 	if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then

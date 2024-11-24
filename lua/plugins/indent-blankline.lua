@@ -4,4 +4,5 @@ return {
 	event = "UIEnter",
 	main = "ibl",
 	opts = {},
+	enabled = false,
 }

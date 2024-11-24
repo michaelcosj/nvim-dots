@@ -1,6 +1,7 @@
 -- https://github.com/nvim-lualine/lualine.nvim
 return {
 	"nvim-lualine/lualine.nvim",
+	enabled = false,
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	opts = {
 		options = {
@@ -15,6 +16,7 @@ return {
 				"diagnostics",
 				"require'arrow.statusline'.text_for_statusline_with_icons()",
 			},
+			lualine_x = { "filetype" },
 		},
 	},
 }
